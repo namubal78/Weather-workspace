@@ -5,6 +5,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>날씨</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 <style>
 
@@ -67,6 +68,26 @@
 		</div>
 
 	</div>
+	
+	<script>
+		
+		$(function() {
+			$("#btn1").click(() => {
+								
+				$.ajax({
+					
+					url: "weather.do",
+					success: function() {
+						console.log("ajax 성공")
+					},
+					error: function() {
+						console.log("ajax 실패")
+					}
+				});
+			});
+		});
+		
+	</script>
 
 </body>
 </html>
