@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- DB 연결 설정 3단계 -->
+   	<!-- 1단계. DB 연결을 위한 도구 (bean) 를 설정 -->
+	<bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource" destroy-method="close">
+	   <!-- 어느 DB 에 접속할건지를 설정 -->
+	   <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	   <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+	   <property name="username" value="WEATHER" />
+	   <property name="password" value="WEATHER" />
+	</bean>
+
+	<!--  
+	해당 이 객체가 앞으로 필요할 때마다 내부적으로 스프링에 의해 이 코드가 실행됨
+	BasicDataSource dataSource = new BasicDataSource();
+	dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+	dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:xe");
+	dataSource.setUserName("SPRING");
+	dataSource.setPassword("SPRING");
+	 -->
+
+	<!-- 2단계. MyBatis Spring 에서 제공하는 SQL 명령어 실행을 위한 도구 (SqlSessionTemplate) 설정 - 1 -->
+	<!--  
+	   * 순수 마이바티스 경우 명령을 실행하기 위해 SqlSession 객체가 필요했지만
+	   Spring 에서의 마이바티스 연동시에는 명령을 실행하기 위해 SqlSessionTemplate 객체가 필요함
+	   => SqlSessionFactoryBean 객체를 통해 생성해야함
+	-->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+	   <!-- MyBatis 설정파일의 위치를 지정하여 설정값들을 가지고 오겠다. -->
+	   <property name="configLocation" value="classpath:mybatis-config.xml" />
+	   <!-- DB 연결을 위한 도구를 참조하겠다. -->
+	   <property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!--  
+	해당 이 객체가 필요할 때마다 내부적으로 이 코드가 실행됨
+	SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+	sqlSessionFactory.setConfigLocation("classpath:mybatis-config.xml");
+	sqlSessionFactory.setDataSource(dataSource);
+	 -->
+
+	<!-- 3단계. MyBatis Spring 에서 제공하는 SQL 명령어 실행을 위한 도구 (SqlSessionTemplate) 설정 - 2 -->
+	<bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
+	   <!-- 2단계에서 만들었던 SqlSessionFactoryBean 객체를 넘기면서 SqlSessionTemplate 객체를 생성하겠다. -->
+	   <constructor-arg ref="sqlSessionFactory" />
+	</bean>
+
+	<!--  
+	해당 이 객체가 필요할 때마다 내부적으로 이 코드가 실행됨
+	SqlSessionTemplate sqlSession = new SqlSessionTemplate(sqlSessionFactory);
+	 -->
+	
+	<!--  
+	   property : setter 주입
+	   constructor-arg : 생성자 주입
+	-->
+
+</beans>
