@@ -200,7 +200,7 @@
 					
 					if(parseInt(hours) < 2 ) {
 												
-						if(parseInt(date) = 1) {
+						if(parseInt(date) == 1) {
 							switch (parseInt(month)) {
 								case 1 :
 									base_date = String(parseInt(year) - 1) + "1231";
