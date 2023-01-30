@@ -248,10 +248,18 @@
 							base_time: base_time
 						},
 						success: function(data) {
-							console.log("ajax 성공")
+							console.log("ajax 성공");
+							let itemArr = data.response.body.items.item; // [{}, {}, {}, ..]
+							// console.log(itemArr);
+							
+							for(let i = 0; i < 13; i++) {
+								if(itemArr[i].fcstTime == hours + "00") {
+									console.log("a");
+								}
+							}
 						},
-						error: function() {
-							console.log("ajax 실패")
+						error: function(data) {
+							console.log("ajax 실패");
 						}
 					});
 					
