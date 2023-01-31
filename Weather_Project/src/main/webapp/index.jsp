@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +12,7 @@
 <style>
 
 	div {
-		border: 1px solid black;
+		border: 1px solid blue;
 		box-sizing: border-box;
 	}
 	
@@ -24,48 +25,14 @@
 			<h2>실시간 날씨 조회</h2>
 		</div>
 
-		<div id="weatherSelect">
-			<p>주요 도시별 날씨</p>
-			
-			<select id="location">
-				<option>서울</option>
-				<option>부산</option>
-				<option>대전</option>
-				<option>제주</option>
-			</select>
-		
-			<button id="btn1">해당 지역 날씨 보기</button>
-
-			<br><br>
-			
-			<table id="result1" border="1" align="center">
-				<thead>
-					<tr>
-						<th>info</th>
-						<th>info</th>
-						<th>info</th>
-						<th>info</th>
-						<th>info</th>
-						<th>info</th>
-						<th>info</th>
-						<th>info</th>
-					</tr>
-				</thead>
-				<tbody></tbody>	
-			</table>
-
-		</div>
-
 		<div id="weatherCurrent">
-			<p>현재 내 위치 날씨</p>
+		
+			<p>1</p>
+
 		</div>
 
 		<div id="weatherForecast">
 			<p>내 위치 날씨 예보</p>
-		</div>
-
-		<div id="weatherChart">
-			<p>내 위치 날씨 차트</p>
 		</div>
 
 	</div>
@@ -202,22 +169,37 @@
 												
 						if(parseInt(date) == 1) {
 							switch (parseInt(month)) {
-								case 1 :
+								case 1:
 									base_date = String(parseInt(year) - 1) + "1231";
 									break;
-								case 4, 6, 8, 9, 11 :
+								case 2:
+								case 4:
+								case 6:
+								case 8:
+								case 9:
+									base_date = String(year) + "0" + String(parseInt(month) - 1) + "31";
+									break;
+								case 11:
 									base_date = String(year) + String(parseInt(month) - 1) + "31";
 									break;
-								case 5, 7, 10, 12 :
+								case 5:
+								case 7:
+								case 10:
+									base_date = String(year) + "0" + String(parseInt(month) - 1) + "30";
+									break;
+								case 12:
 									base_date = String(year) + String(parseInt(month) - 1) + "30";
 									break;
-								case 3 :
-									base_date = String(year) + String(parseInt(month) - 1) + "28";
+								case 3:
+									base_date = String(year) + "0" + String(parseInt(month) - 1) + "28";
+									break;
 							}
+						} else if (parseInt(date) >= 2 && parseInt(date) <= 10) {					
+							base_date = String(year) + String(month) + "0" + String(parseInt(date) - 1);
 						} else {
 							base_date = String(year) + String(month) + String(parseInt(date) - 1);
 						}
-						
+												
 						base_time = "2300";
 
 					} else if (parseInt(hours) < 5 ) {
@@ -237,7 +219,7 @@
 					} else {
 						base_time = "2300";
 					}
-				
+					
 					$.ajax({
 						
 						url: "weather.do",
@@ -248,18 +230,11 @@
 							base_time: base_time,
 							current_time: current_time
 						},
-						success: function(data) {
+						success: function(result) {
 							console.log("ajax 성공");
-							let itemArr = data.response.body.items.item; // [{}, {}, {}, ..]
-							// console.log(itemArr);
-							
-							for(let i = 0; i < 13; i++) {
-								if(itemArr[i].fcstTime == hours + "00") {
-									console.log("a");
-								}
-							}
+							$("#weatherCurrent").html(result);
 						},
-						error: function(data) {
+						error: function() {
 							console.log("ajax 실패");
 						}
 					});

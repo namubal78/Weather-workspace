@@ -8,24 +8,29 @@ import java.net.URL;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.namubal.weather.model.service.WeatherService;
 import com.namubal.weather.model.vo.Weather;
 
 @Controller
 public class WeatherController {
 
+	@Autowired
+	private WeatherService weatherService;
+	
 	public static final String SERVICEKEY = "ydPY7ABO4D6zNxj8P%2B6%2FsD%2B78wn8BM65XurwyxF8ETDo2SH2Qv644PoIWsq%2BpZK86nYY6YnLiL3XtzyEqfzn%2Fw%3D%3D";
 
 	enum WeatherValue {
-        TMP, UUU, VVV, VEC, WSD, SKY, PTY, POP, WAV, REH, TMN, TMX, PCPValue, SNOValue
+        TMP, UUU, VVV, VEC, WSD, SKY, PTY, POP, WAV, REH, TMN, TMX, PCP, SNO
     }
 	
-	@ResponseBody
 	@RequestMapping(value="weather.do", produces="application/json; charset=UTF-8")
-	public JSONArray weather(int nx, int ny, String base_date, String base_time, String current_time) throws Exception {
+	public String weather(int nx, int ny, String base_date, String base_time, String current_time, Model model) throws Exception {
 		
 		Weather weather = new Weather();
 		
@@ -62,7 +67,7 @@ public class WeatherController {
 			responseText += line; // 고쳐야할 곳. line 하나마다 재가공해서 table 에 insert
 		}
 		
-		System.out.println("responseText: " + responseText);
+		// System.out.println("responseText: " + responseText);
 		
 		br.close();
 		urlConnection.disconnect();
@@ -84,10 +89,10 @@ public class WeatherController {
             // item 들을 담은 List 를 반복자 안에서 사용하기 위해 미리 명시
             JSONObject object;
             // item 내부의 category 를 보고 사용하기 위해서 사용
-            String category;
-            Double value;
-            String PCPValue;
-            String SNOValue;
+            String category = "";
+            Double value = -100.0; // 존재할 수 없는 코드값 할당
+            String PCPValue = null;
+            String SNOValue = null;
         	
         	object = (JSONObject) parse_item.get(i);
             category = (String) object.get("category"); // item 에서 카테고리를 검색
@@ -95,24 +100,42 @@ public class WeatherController {
             if(category.equals("PCP")) {
             	
             	PCPValue = (String) object.get("fcstValue");
-            	System.out.println("PCPValue: " + PCPValue);
             	
             } else if(category.equals("SNO")) {
             	
             	SNOValue = (String) object.get("fcstValue");
-            	System.out.println("SNOValue: " + SNOValue);
+            	
+            } else if (category.equals("TMP")) {
+            	
+            	if(weather.getTMP() == 0.0) {
+            		
+                	value = Double.parseDouble((String) object.get("fcstValue"));
+            	
+            	} else {
+            		
+            		value = weather.getTMP();
+            		
+            	}
+            	
+            } else if (category.equals("UUU")) {
+            	
+            	if(weather.getUUU() == 0.0) {
+            		
+                	value = Double.parseDouble((String) object.get("fcstValue"));
+                	
+            	} else {
+            		
+            		value = weather.getUUU();
+            	}
             	
             } else {
-               
-                value = Double.parseDouble((String) object.get("fcstValue"));
-    			System.out.println("value: " + value);
-    			
+
+            	value = Double.parseDouble((String) object.get("fcstValue"));
+            
             }
             
             WeatherValue weatherValue = WeatherValue.valueOf(category);
-            System.out.println("weatherValue: " + weatherValue);
             
-            /*
             switch (weatherValue) {
                 case TMP:
             		weather.setTMP(value);
@@ -129,6 +152,12 @@ public class WeatherController {
                 case WSD:
                     weather.setWSD(value);
                     break;
+                case SKY:
+                    weather.setSKY(value);
+                    break;
+                case PTY:
+                    weather.setPTY(value);
+                    break;
                 case POP:
                     weather.setPOP(value);
                     break;
@@ -144,27 +173,40 @@ public class WeatherController {
                 case TMX:
                     weather.setTMX(value);
                     break;
+                case PCP:
+                    weather.setPCP(PCPValue);
+                    break;    
+                case SNO:
+                    weather.setSNO(SNOValue);
+                    break;  
                 default:
                     break;
             }
-            */
         }
         
-        /*
-
-        case PCP:
-            weather.setPCP(value);
-            break;    
-                        case SNO:
-                    weather.setSNO(value);
-                    break;  
         weather.setBaseDate(base_date);
         weather.setBaseTime(base_time);
-        weather.setFcstTime(base_date);
-
+        weather.setFcstDate(base_date);
+        weather.setFcstTime(current_time);
+        
+        String weatherNo = base_date + base_time;
+        weather.setWeatherNo(weatherNo);
+        
         System.out.println("weather: " + weather);
-        */
-        return parse_item;
+        
+        int result = weatherService.checkWeather(weatherNo);
+        
+        if(result != 0) { // 이미 insert 했던 예보
+        	
+        } else {
+        	weatherService.insertWeather(weather);
+        }
+        
+        Weather weatherInfo = weatherService.selectWeather(weather);        
+        model.addAttribute("weatherInfo", weatherInfo);       
+        System.out.println("weatherInfo: " + weatherInfo);
+        
+        return "weatherCurrentInfo";
         
 	}
 }

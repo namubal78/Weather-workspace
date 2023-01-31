@@ -32,12 +32,7 @@ public class Weather {
     private String SNO; // 1시간 신적설(cm)
     private double TMN; // 일 최저기온(섭씨)
     private double TMX; // 일 최고기온(섭씨)
-	
-    private String category;
-    private Double value;
-    private String PCPValue;
-    private String SNOValue;
-    
+
     private String weatherNo;
     
 }

@@ -2,4 +2,79 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
 <mapper namespace="weatherMapper">
 
+	<resultMap id="weatherResultSet" type="weather">
+		<result column="WEATHER_NO" property="weatherNo" />
+		<result column="BASE_DATE" property="baseDate" />
+		<result column="BASE_TIME" property="baseTime" />
+		<result column="FCST_DATE" property="fcstDate" />
+		<result column="FCST_TIME" property="fcstTime" />
+		<result column="TMP" property="TMP" />
+		<result column="UUU" property="UUU" />
+		<result column="VVV" property="VVV" />
+		<result column="VEC" property="VEC" />
+		<result column="WSD" property="WSD" />
+		<result column="SKY" property="SKY" />
+		<result column="PTY" property="PTY" />
+		<result column="POP" property="POP" />
+		<result column="WAV" property="WAV" />
+		<result column="PCP" property="PCP" />
+		<result column="REH" property="REH" />
+		<result column="SNO" property="SNO" />
+		<result column="TMN" property="TMN" />
+		<result column="TMX" property="TMX" />	
+	</resultMap>
+	
+	<select id="checkWeather" parameterType="string" resultType="_int">
+		SELECT COUNT(*)
+		FROM WEATHER
+		WHERE WEATHER_NO = #{weatherNo}
+	</select>
+	
+	<insert id="insertWeather" parameterType="weather">
+		INSERT INTO WEATHER (WEATHER_NO
+						   , BASE_DATE
+						   , BASE_TIME
+						   , FCST_DATE
+						   , FCST_TIME
+						   , TMP
+						   , UUU
+						   , VVV
+						   , VEC
+						   , WSD
+						   , SKY
+						   , PTY
+						   , POP
+						   , WAV
+						   , PCP
+						   , REH
+						   , SNO
+						   , TMN
+						   , TMX)
+					 VALUES (#{weatherNo}
+					 	   , #{baseDate}
+					 	   , #{baseTime}
+					 	   , #{fcstDate}
+					 	   , #{fcstTime}
+					 	   , #{TMP}
+					 	   , #{UUU}
+					 	   , #{VVV}
+					 	   , #{VEC}
+					 	   , #{WSD}
+					 	   , #{SKY}
+					 	   , #{PTY}
+					 	   , #{POP}
+					 	   , #{WAV}
+					 	   , #{PCP}
+					 	   , #{REH}
+					 	   , #{SNO}
+					 	   , #{TMN}
+					 	   , #{TMX})
+	</insert>
+	
+	<select id="selectWeather" parameterType="weather" resultMap="weatherResultSet">
+		SELECT *
+		FROM WEATHER
+		WHERE WEATHER_NO = #{weatherNo}
+	</select>
+	
 </mapper>
