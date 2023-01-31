@@ -1,7 +1,6 @@
 package com.namubal.weather.controller;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,23 +12,28 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.namubal.weather.model.vo.Weather;
+
 @Controller
 public class WeatherController {
 
 	public static final String SERVICEKEY = "ydPY7ABO4D6zNxj8P%2B6%2FsD%2B78wn8BM65XurwyxF8ETDo2SH2Qv644PoIWsq%2BpZK86nYY6YnLiL3XtzyEqfzn%2Fw%3D%3D";
-	
+
 	enum WeatherValue {
-        TMP, UUU, VVV, VEC, WSD, POP, WAV, PCP, REH, SNO, TMN, TMX
+        TMP, UUU, VVV, VEC, WSD, SKY, PTY, POP, WAV, REH, TMN, TMX, PCPValue, SNOValue
     }
 	
 	@ResponseBody
 	@RequestMapping(value="weather.do", produces="application/json; charset=UTF-8")
-	public JSONArray weather(int nx, int ny, String base_date, String base_time) throws Exception {
+	public JSONArray weather(int nx, int ny, String base_date, String base_time, String current_time) throws Exception {
 		
-		// System.out.println(nx);
-		// System.out.println(ny);
-		// System.out.println("base_date: " + base_date);
-		// System.out.println("base_time: " + base_time);
+		Weather weather = new Weather();
+		
+		System.out.println(nx);
+		System.out.println(ny);
+		System.out.println("base_date: " + base_date);
+		System.out.println("base_time: " + base_time);
+		System.out.println("current_time: " + current_time);
 		
 		String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
 			   url += "?serviceKey=" + SERVICEKEY;
@@ -58,7 +62,7 @@ public class WeatherController {
 			responseText += line; // 고쳐야할 곳. line 하나마다 재가공해서 table 에 insert
 		}
 		
-		// System.out.println("responseText: " + responseText);
+		System.out.println("responseText: " + responseText);
 		
 		br.close();
 		urlConnection.disconnect();
@@ -73,19 +77,45 @@ public class WeatherController {
         
         System.out.println("parse_item: " + parse_item);
         
-        /* jsonArray를 반복자로 반복
-        for (int i = 0; i < 13; i++) { // 시각당 최대 14 종류 코드값이므로 14개까지 조회
-            object = (JSONObject) parse_item.get(i);
+                
+        // jsonArray를 반복자로 반복
+        for (int i = 0; i < 14; i++) { // 시각당 최대 14 종류 코드값이므로 14개까지 조회
+            
+            // item 들을 담은 List 를 반복자 안에서 사용하기 위해 미리 명시
+            JSONObject object;
+            // item 내부의 category 를 보고 사용하기 위해서 사용
+            String category;
+            Double value;
+            String PCPValue;
+            String SNOValue;
+        	
+        	object = (JSONObject) parse_item.get(i);
             category = (String) object.get("category"); // item 에서 카테고리를 검색
 
-            // Error 발생할수도 있으며 받아온 정보를 double이 아니라 문자열로 읽으면 오류
-            value = Double.parseDouble((String) object.get("obsrValue"));
-
+            if(category.equals("PCP")) {
+            	
+            	PCPValue = (String) object.get("fcstValue");
+            	System.out.println("PCPValue: " + PCPValue);
+            	
+            } else if(category.equals("SNO")) {
+            	
+            	SNOValue = (String) object.get("fcstValue");
+            	System.out.println("SNOValue: " + SNOValue);
+            	
+            } else {
+               
+                value = Double.parseDouble((String) object.get("fcstValue"));
+    			System.out.println("value: " + value);
+    			
+            }
+            
             WeatherValue weatherValue = WeatherValue.valueOf(category);
-
+            System.out.println("weatherValue: " + weatherValue);
+            
+            /*
             switch (weatherValue) {
                 case TMP:
-                    weather.setTMP(value);
+            		weather.setTMP(value);
                     break;
                 case UUU:
                     weather.setUUU(value);
@@ -105,15 +135,9 @@ public class WeatherController {
                 case WAV:
                     weather.setWAV(value);
                     break;
-                case PCP:
-                    weather.setPCP(value);
-                    break;                
                 case REH:
                     weather.setREH(value);
-                    break;                
-                case SNO:
-                    weather.setSNO(value);
-                    break;                
+                    break;                              
                 case TMN:
                     weather.setTMN(value);
                     break;                
@@ -123,15 +147,23 @@ public class WeatherController {
                 default:
                     break;
             }
+            */
         }
-        weather.setDate(baseDate);
-        weather.setTime(baseTime);
-        weather.setTime(fcstDate);
-        weather.setTime(fcstTime);
-        // 잘 출력되는지 확인하고 싶으면 아래 주석 해제
-        // System.out.println(weather);
-        */
         
+        /*
+
+        case PCP:
+            weather.setPCP(value);
+            break;    
+                        case SNO:
+                    weather.setSNO(value);
+                    break;  
+        weather.setBaseDate(base_date);
+        weather.setBaseTime(base_time);
+        weather.setFcstTime(base_date);
+
+        System.out.println("weather: " + weather);
+        */
         return parse_item;
         
 	}

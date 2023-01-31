@@ -245,7 +245,8 @@
 							nx: nx,
 							ny: ny,
 							base_date: base_date,
-							base_time: base_time
+							base_time: base_time,
+							current_time: current_time
 						},
 						success: function(data) {
 							console.log("ajax 성공");
