@@ -1,39 +1,93 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
 	<title>날씨</title>
+	<script src="https://kit.fontawesome.com/6cda7ccd12.js" crossorigin="anonymous"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 </head>
 <style>
 
 	div {
-		border: 1px solid blue;
+		/* border: 1px solid blue; */
 		box-sizing: border-box;
 	}
+
+	#wrap {
+		width: 612px;
+		height: 612px;
+		background-color: rgb(77, 127, 187);
+		border-radius: 10px;
+		margin: 20px;
+		padding: 20px;
+	}
+
+	#wrap>div {
+		width: 100%;
+	}
+
+	#title {
+		height: 15%;
+		margin: auto;
+	}
+
+	#title>pre {
+		font-size: 50px;
+		color: lightgray;
+		margin-left: 20px;
+	}
+
+	#content {
+		height: 80%;
+	}
 	
+	#content>div {
+		width: 100%;
+	}
+
+	#weatherCurrent {
+		height: 60%;
+		/* border: 1px solid red; */
+		background-color: rgb(49, 90, 141);
+		border-radius: 10px;
+	}
+
+	#weatherForecast {
+		height: 40%;
+		/* border: 1px solid yellow; */
+		background-color: rgb(49, 90, 141);
+		border-radius: 10px;
+		margin-top: 5px;
+	}
+
 </style>
 <body>
 
-	<div id="content">
+	<div id="wrap">
 	
 		<div id="title">
-			<h2>실시간 날씨 조회</h2>
+			<br>
+			<pre>오늘의 날씨 조회</p>
 		</div>
 
-		<div id="weatherCurrent">
+		<div id="content">
+
+			<div id="weatherCurrent">
+				<p style="font-size: 20px; color: lightgray;" align="center">loading...</p>
+			</div>
+	
+			<div id="weatherForecast">
+				<p>내 위치 날씨 예보</p>
+			</div>
+
+		</div>
 		
-			<p>1</p>
-
-		</div>
-
-		<div id="weatherForecast">
-			<p>내 위치 날씨 예보</p>
-		</div>
 
 	</div>
 	
