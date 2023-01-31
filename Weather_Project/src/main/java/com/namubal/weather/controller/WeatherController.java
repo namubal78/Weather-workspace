@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -204,6 +205,36 @@ public class WeatherController {
         Weather weatherInfo = weatherService.selectWeather(weather);        
         model.addAttribute("weatherInfo", weatherInfo);       
         System.out.println("weatherInfo: " + weatherInfo);
+        
+    	ArrayList<Integer> weatherFcst = new ArrayList<Integer>();
+        
+        for (int i = 0; i < 126; i++) { // 시각당 최대 14*9 종류 코드값이므로 126개까지 조회
+            
+            // item 들을 담은 List 를 반복자 안에서 사용하기 위해 미리 명시
+            JSONObject object;
+            // item 내부의 category 를 보고 사용하기 위해서 사용
+            String category = "";
+            int value = -100; // 존재할 수 없는 코드값 할당
+        	
+        	object = (JSONObject) parse_item.get(i);
+        	// System.out.println("object: " + object);
+            category = (String) object.get("category"); // item 에서 카테고리를 검색
+        	
+        	if(category.equals("TMP")) {
+        		value= Integer.parseInt((String)object.get("fcstValue"));
+        		weatherFcst.add(value);
+        	}
+        }
+        
+    	ArrayList<Integer> weatherFcstInfo = new ArrayList<Integer>();
+    	
+    	weatherFcstInfo.add(weatherFcst.get(0));
+    	weatherFcstInfo.add(weatherFcst.get(3));
+    	weatherFcstInfo.add(weatherFcst.get(6));
+    	weatherFcstInfo.add(weatherFcst.get(9));
+        
+        model.addAttribute("weatherFcstInfo", weatherFcstInfo);
+        System.out.println("weatherFcstInfo: " + weatherFcstInfo);
         
         return "weatherCurrentInfo";
         

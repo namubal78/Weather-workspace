@@ -24,8 +24,8 @@
 		height: 612px;
 		background-color: rgb(77, 127, 187);
 		border-radius: 10px;
-		margin: 20px;
-		padding: 20px;
+		margin: 15px;
+		padding: 15px;
 	}
 
 	#wrap>div {
@@ -34,13 +34,12 @@
 
 	#title {
 		height: 15%;
-		margin: auto;
 	}
 
-	#title>pre {
-		font-size: 50px;
+	#title>p {
+		font-size: 40px;
 		color: lightgray;
-		margin-left: 20px;
+		margin-left: 10px;
 	}
 
 	#content {
@@ -52,18 +51,7 @@
 	}
 
 	#weatherCurrent {
-		height: 60%;
-		/* border: 1px solid red; */
-		background-color: rgb(49, 90, 141);
-		border-radius: 10px;
-	}
-
-	#weatherForecast {
-		height: 40%;
-		/* border: 1px solid yellow; */
-		background-color: rgb(49, 90, 141);
-		border-radius: 10px;
-		margin-top: 5px;
+		height: 95%;
 	}
 
 </style>
@@ -72,25 +60,18 @@
 	<div id="wrap">
 	
 		<div id="title">
+			<p style="margin: 10px;">오늘의 날씨 조회</p>
 			<br>
-			<pre>오늘의 날씨 조회</p>
 		</div>
 
 		<div id="content">
-
 			<div id="weatherCurrent">
-				<p style="font-size: 20px; color: lightgray;" align="center">loading...</p>
-			</div>
-	
-			<div id="weatherForecast">
-				<p>내 위치 날씨 예보</p>
-			</div>
+				<br><br><br><br><br><br>
+				<p style="font-size: 20px; color: lightgray;" align="center">loading now...</p>
+			</div>	
+		</div>		
+    </div>
 
-		</div>
-		
-
-	</div>
-	
 	<script>
 	
 		// 소스출처 : http://www.kma.go.kr/weather/forecast/digital_forecast.jsp  내부에 있음
