@@ -16,18 +16,19 @@ public class WeatherServiceImpl implements WeatherService {
 	@Autowired
 	private WeatherDao weatherDao;
 	
+	// 날씨 insert 전 중복체크용 select 
 	@Override
 	public int checkWeather(String weatherNo) {
-		
 		return weatherDao.checkWeather(sqlSession, weatherNo);
 	}
 
+	// 날씨 insert
 	@Override
 	public int insertWeather(Weather weather) {
-		
 		return weatherDao.insertWeather(sqlSession, weather);
 	}
 
+	// 날씨 select
 	@Override
 	public Weather selectWeather(Weather weather) {
 		return weatherDao.selectWeather(sqlSession, weather);

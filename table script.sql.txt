@@ -2,26 +2,26 @@ DROP TABLE WEATHER CASCADE CONSTRAINTS;
 
 CREATE TABLE WEATHER (
 
-    WEATHER_NO VARCHAR2(100) PRIMARY KEY,
+    WEATHER_NO VARCHAR2(100) PRIMARY KEY, -- 조회용 주키
 
-    BASE_DATE VARCHAR2(100),
-    BASE_TIME VARCHAR2(100),
-    FCST_DATE VARCHAR2(100),
-    FCST_TIME VARCHAR2(100),
+    BASE_DATE VARCHAR2(100), -- 발표일자 ex) 20230201
+    BASE_TIME VARCHAR2(100), -- 발표시각 ex) 0100
+    FCST_DATE VARCHAR2(100), -- 예보일자 ex) 20230201
+    FCST_TIME VARCHAR2(100), -- 예보시각 ex) 0100
     
-    TMP NUMBER(10, 2),
-    UUU NUMBER(10, 2),
-    VVV NUMBER(10, 2),
-    VEC NUMBER(10, 2),
-    WSD NUMBER(10, 2),
-    SKY NUMBER(10, 2),
-    PTY NUMBER(10, 2),
-    POP NUMBER(10, 2),
-    WAV NUMBER(10, 2),
-    PCP VARCHAR2(100),
-    REH NUMBER(10, 2),
-    SNO VARCHAR2(100),
-    TMN NUMBER(10, 2) DEFAULT 0.0,
-    TMX NUMBER(10, 2) DEFAULT 0.0);
+    TMP NUMBER(10, 2), -- 1시간 기온('C)
+    UUU NUMBER(10, 2), -- 풍속(동서성분)(m/s)
+    VVV NUMBER(10, 2), -- 풍속(남북성분)(m/s)
+    VEC NUMBER(10, 2), -- 풍향(deg)
+    WSD NUMBER(10, 2), -- 풍속(m/s)
+    SKY NUMBER(10, 2), -- 하늘상태(코드값)
+    PTY NUMBER(10, 2), -- 강수형태(코드값)
+    POP NUMBER(10, 2), -- 강수확률(%)
+    WAV NUMBER(10, 2), -- 파고(M)
+    PCP VARCHAR2(100), -- 1시간 강수량(mm)
+    REH NUMBER(10, 2), -- 습도(%)
+    SNO VARCHAR2(100), -- 1시간 신적설(cm)
+    TMN NUMBER(10, 2) DEFAULT 0.0, -- 일 최저기온('C)
+    TMX NUMBER(10, 2) DEFAULT 0.0); -- 일 최고기온('C)
     
 COMMIT;

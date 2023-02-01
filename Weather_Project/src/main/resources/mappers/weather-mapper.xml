@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
 <mapper namespace="weatherMapper">
 
-	<resultMap id="weatherResultSet" type="weather">
+	<!-- 조회용 resultMap -->
+	<resultMap id="weatherResultSet" type="weather"> 
 		<result column="WEATHER_NO" property="weatherNo" />
 		<result column="BASE_DATE" property="baseDate" />
 		<result column="BASE_TIME" property="baseTime" />
@@ -24,12 +25,14 @@
 		<result column="TMX" property="TMX" />	
 	</resultMap>
 	
+	<!-- insert 전 중복체크용 select -->	
 	<select id="checkWeather" parameterType="string" resultType="_int">
 		SELECT COUNT(*)
 		FROM WEATHER
 		WHERE WEATHER_NO = #{weatherNo}
 	</select>
 	
+	<!-- insert -->
 	<insert id="insertWeather" parameterType="weather">
 		INSERT INTO WEATHER (WEATHER_NO
 						   , BASE_DATE
@@ -71,6 +74,7 @@
 					 	   , #{TMX})
 	</insert>
 	
+	<!-- 조회용 select -->
 	<select id="selectWeather" parameterType="weather" resultMap="weatherResultSet">
 		SELECT *
 		FROM WEATHER

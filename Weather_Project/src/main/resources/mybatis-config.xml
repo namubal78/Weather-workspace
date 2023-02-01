@@ -6,24 +6,10 @@
 		<setting name="jdbcTypeForNull" value="NULL" />
 	</settings>
 	
-	<!-- 미리 등록해두려면 해당 클래스가 실제로 존재하는 상태여야 함 (ClassNotFoundException) -->
 	<typeAliases>
 		<typeAlias type="com.namubal.weather.model.vo.Weather" alias="weather" />
 	</typeAliases>
 	
-	<!-- 
-		* 기존 MyBatis 시간에 이 자리에 environments 영역을 기술
-		=> 이 영역에 내가 접속하고자 하는 DB 의 연결 정보를 담아놨었음!!
-		
-		* Spring 에서 MyBatis 를 연동하기 위해서는 DB 연결정보를 root-context.xml 파일에 작성해야함
-		=> DB 등록은 서버 구동과 동시에 이루어져야 되기 때문에 서버 스타트와 동시에 곧바로 읽혀지는 파일인
-		   root-context.xml 에서 설정해야하기 때문
-	 -->
-	 
-	 <!-- 
-	 	미리 등록해두려면 해당 mapper 파일이 실제로 존재하는 상태여야 함 (FileNotFoundException)
-	 	뿐만 아니라 해당 mapper 파일의 namespace 속성도 반드시 있어야함!!
-	  -->
 	 <mappers>
 	 	<mapper resource="/mappers/weather-mapper.xml" />
 	 </mappers>

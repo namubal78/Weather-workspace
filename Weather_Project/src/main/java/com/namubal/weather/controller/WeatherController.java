@@ -23,8 +23,10 @@ public class WeatherController {
 	@Autowired
 	private WeatherService weatherService;
 	
-	public static final String SERVICEKEY = "ydPY7ABO4D6zNxj8P%2B6%2FsD%2B78wn8BM65XurwyxF8ETDo2SH2Qv644PoIWsq%2BpZK86nYY6YnLiL3XtzyEqfzn%2Fw%3D%3D";
+	// 기상청_단기예보 공공데이터 인증키
+	public static final String SERVICEKEY = "ydPY7ABO4D6zNxj8P%2B6%2FsD%2B78wn8BM65XurwyxF8ETDo2SH2Qv644PoIWsq%2BpZK86nYY6YnLiL3XtzyEqfzn%2Fw%3D%3D"; 
 
+	// 날씨 조회용 value enum 생성
 	enum WeatherValue {
         TMP, UUU, VVV, VEC, WSD, SKY, PTY, POP, WAV, REH, TMN, TMX, PCP, SNO
     }
@@ -34,21 +36,21 @@ public class WeatherController {
 		
 		Weather weather = new Weather();
 		
-		System.out.println(nx);
-		System.out.println(ny);
-		System.out.println("base_date: " + base_date);
-		System.out.println("base_time: " + base_time);
-		System.out.println("current_time: " + current_time);
+		// System.out.println(nx); 
+		// System.out.println(ny); 
+		// System.out.println("base_date: " + base_date);
+		// System.out.println("base_time: " + base_time);
+		// System.out.println("current_time: " + current_time);
 		
 		String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
-			   url += "?serviceKey=" + SERVICEKEY;
-			   url += "&numOfRows=500";
-			   url += "&pageNo=1";
-			   url += "&dataType=JSON";
-			   url += "&base_date=" + base_date;
-			   url += "&base_time=" + base_time;
-			   url += "&nx=" + nx;
-			   url += "&ny=" + ny;
+			   url += "?serviceKey=" + SERVICEKEY; // 인증키
+			   url += "&numOfRows=500"; // 한 페이지 결과 수(일 최고기온, 일 최저기온 값 받아야 하기 때문에 500 이상) 
+			   url += "&pageNo=1"; // 페이지 번호
+			   url += "&dataType=JSON"; // 응답자료형식
+			   url += "&base_date=" + base_date; // 발표일자
+			   url += "&base_time=" + base_time; // 발표시각
+			   url += "&nx=" + nx; // 예보지점 X 좌표
+			   url += "&ny=" + ny; // 예보지점 Y 좌표
 		
 		URL requestUrl = new URL(url);
 		
@@ -64,78 +66,58 @@ public class WeatherController {
 		
 		while((line = br.readLine()) != null) {
 			// System.out.println("line: " + line);
-			responseText += line; // 고쳐야할 곳. line 하나마다 재가공해서 table 에 insert
+			responseText += line;
 		}
 		
 		// System.out.println("responseText: " + responseText);
 		
 		br.close();
 		urlConnection.disconnect();
-				
+		
+		// 파싱
         JSONParser jsonParser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) jsonParser.parse(responseText);
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(responseText); // String -> JSONObject
         JSONObject parse_response = (JSONObject) jsonObject.get("response");
-        JSONObject parse_body = (JSONObject) parse_response.get("body"); // response 로 부터 body 찾아오기
-        JSONObject parse_items = (JSONObject) parse_body.get("items"); // body 로 부터 items 받아오기
-        // items 로 부터 itemList : 뒤에 [ 로 시작하므로 jsonArray 이다.
-        JSONArray parse_item = (JSONArray) parse_items.get("item");
+        JSONObject parse_body = (JSONObject) parse_response.get("body");
+        JSONObject parse_items = (JSONObject) parse_body.get("items");
+        JSONArray parse_item = (JSONArray) parse_items.get("item"); // JSONObject -> JSONArray
+        // System.out.println("parse_item: " + parse_item);
         
-        System.out.println("parse_item: " + parse_item);
-        
-                
-        // jsonArray를 반복자로 반복
-        for (int i = 0; i < 14; i++) { // 시각당 최대 14 종류 코드값이므로 14개까지 조회
+        // 1. 현재 시각 날씨 정보들 조회
+        for (int i = 0; i < 14; i++) { // 한 시각 당 최대 14종류 코드값이므로 14개까지 조회
             
-            // item 들을 담은 List 를 반복자 안에서 사용하기 위해 미리 명시
             JSONObject object;
-            // item 내부의 category 를 보고 사용하기 위해서 사용
-            String category = "";
-            Double value = -100.0; // 존재할 수 없는 코드값 할당
-            String PCPValue = null;
-            String SNOValue = null;
+            String category = ""; // 종류 변수 선언
+            Double value = -100.0;
+            String PCPValue = null; // 강수량 뿐만 아니라 '강수없음' 값이 존재하므로, Double이 아닌 String
+            String SNOValue = null; // 적설량 뿐만 아니라 '적설없음' 값이 존재하므로, Double이 아닌 String
         	
         	object = (JSONObject) parse_item.get(i);
-            category = (String) object.get("category"); // item 에서 카테고리를 검색
+            category = (String) object.get("category"); // JSONObject -> String
 
+            // 종류 키에 맞는 값을 형변환해서 PCPValue, SNOValue, value에 담음
             if(category.equals("PCP")) {
-            	
             	PCPValue = (String) object.get("fcstValue");
-            	
             } else if(category.equals("SNO")) {
-            	
             	SNOValue = (String) object.get("fcstValue");
-            	
-            } else if (category.equals("TMP")) {
-            	
-            	if(weather.getTMP() == 0.0) {
-            		
+            } else if (category.equals("TMP")) { // 다음 시각의 TMP 코드값으로 재할당 되는 것 방지하는 조건문
+            	if(weather.getTMP() == 0.0) { // weather 객체에 TMP 값 담겨있지 않음 -> 담기
                 	value = Double.parseDouble((String) object.get("fcstValue"));
-            	
-            	} else {
-            		
+            	} else { // 담겨있음 -> 기존에 담긴 값 꺼내서 value에 다시 담기
             		value = weather.getTMP();
-            		
             	}
-            	
-            } else if (category.equals("UUU")) {
-            	
-            	if(weather.getUUU() == 0.0) {
-            		
+            } else if (category.equals("UUU")) { // 다음 시각의 UUU 코드값으로 재할당 되는 것 방지하는 조건문
+            	if(weather.getUUU() == 0.0) { // weather 객체에 UUU 값 담겨있지 않음 -> 담기
                 	value = Double.parseDouble((String) object.get("fcstValue"));
-                	
-            	} else {
-            		
+            	} else { // 담겨있음 -> 기존에 담긴 값 꺼내서 value에 다시 담기
             		value = weather.getUUU();
             	}
-            	
-            } else {
-
+            } else { // 그 외 종류
             	value = Double.parseDouble((String) object.get("fcstValue"));
-            
             }
             
+            // value를 weather 객체에 담음
             WeatherValue weatherValue = WeatherValue.valueOf(category);
-            
             switch (weatherValue) {
                 case TMP:
             		weather.setTMP(value);
@@ -184,42 +166,41 @@ public class WeatherController {
             }
         }
         
+        // 그 외 value weather 객체에 담음
         weather.setBaseDate(base_date);
         weather.setBaseTime(base_time);
         weather.setFcstDate(base_date);
         weather.setFcstTime(current_time);
-        
-        String weatherNo = base_date + base_time;
+        // DB 조회용 주키 변수(weatherNo) 생성하고 담음
+        String weatherNo = base_date + base_time; 
         weather.setWeatherNo(weatherNo);
         
-        System.out.println("weather: " + weather);
+        // System.out.println("weather: " + weather);
         
-        int result = weatherService.checkWeather(weatherNo);
+        int result = weatherService.checkWeather(weatherNo); // insert 전 중복체크용 메소드 호출
         
-        if(result != 0) { // 이미 insert 했던 예보
+        if(result != 0) { // 이미 insert
         	
-        } else {
-        	weatherService.insertWeather(weather);
+        } else { // 아직 insert 안 함
+        	weatherService.insertWeather(weather); // insert 메소드 호출
         }
         
         Weather weatherInfo = weatherService.selectWeather(weather);        
         model.addAttribute("weatherInfo", weatherInfo);       
-        System.out.println("weatherInfo: " + weatherInfo);
 
-    	ArrayList<Double> weatherMaxMin = new ArrayList<Double>();
+        // 2. 일 최고기온, 일 최저기온 조회        
+    	ArrayList<Double> weatherMaxMin = new ArrayList<Double>(); // 조회용 ArrayList 생성
         
-        for (int i = 0; i < 335; i++) { // 시각당 최대 14*24 종류 코드값이므로 336개까지 조회
+        for (int i = 0; i < 335; i++) { // 한 시각 당 최대 14종류 코드값 * 24 시간이므로 336개까지 조회
             
-            // item 들을 담은 List 를 반복자 안에서 사용하기 위해 미리 명시
             JSONObject object;
-            // item 내부의 category 를 보고 사용하기 위해서 사용
-            String category = "";
-            Double value = -100.0; // 존재할 수 없는 코드값 할당
+            String category = ""; // 종류 변수 선언
+            Double value = -100.0;
         	
         	object = (JSONObject) parse_item.get(i);
-        	// System.out.println("object: " + object);
-            category = (String) object.get("category"); // item 에서 카테고리를 검색
+            category = (String) object.get("category");
         	
+            // 일 최고기온, 일 최저기온 값을 형변환해서 value에 담음
         	if(category.equals("TMX")) {
         		value= Double.parseDouble((String)object.get("fcstValue"));
         		weatherMaxMin.add(value);
@@ -230,39 +211,36 @@ public class WeatherController {
         }
         
         model.addAttribute("weatherMaxMin", weatherMaxMin);
-        System.out.println("weatherMaxMin: " + weatherMaxMin);
         
-    	ArrayList<Integer> weatherFcst = new ArrayList<Integer>();
+        // 3. 단기 날씨 예보용 기온 조회(현재, 3시간 후, 6시간 후, 9시간 후)
+    	ArrayList<Integer> weatherFcst = new ArrayList<Integer>(); // 사전 조회용 ArryList 생성
         
-        for (int i = 0; i < 126; i++) { // 시각당 최대 14*9 종류 코드값이므로 126개까지 조회
+        for (int i = 0; i < 126; i++) { // 한 시각 당 최대 14종류 코드값 * 9 시간이므로 126개까지 조회
             
-            // item 들을 담은 List 를 반복자 안에서 사용하기 위해 미리 명시
             JSONObject object;
-            // item 내부의 category 를 보고 사용하기 위해서 사용
-            String category = "";
-            int value = -100; // 존재할 수 없는 코드값 할당
+            String category = ""; // 종류 변수 선언
+            int value = -100;
         	
         	object = (JSONObject) parse_item.get(i);
-        	// System.out.println("object: " + object);
-            category = (String) object.get("category"); // item 에서 카테고리를 검색
+            category = (String) object.get("category");
         	
+            // 현재 ~ 9시간 후까지의 매 시각 기온 값을 형변환해서 value에 담음
         	if(category.equals("TMP")) {
         		value= Integer.parseInt((String)object.get("fcstValue"));
         		weatherFcst.add(value);
         	}
         }
         
-    	ArrayList<Integer> weatherFcstInfo = new ArrayList<Integer>();
+    	ArrayList<Integer> weatherFcstInfo = new ArrayList<Integer>(); // 조회용 ArrayList 생성
     	
-    	weatherFcstInfo.add(weatherFcst.get(0));
-    	weatherFcstInfo.add(weatherFcst.get(3));
-    	weatherFcstInfo.add(weatherFcst.get(6));
-    	weatherFcstInfo.add(weatherFcst.get(9));
+    	weatherFcstInfo.add(weatherFcst.get(0)); // 현재 기온 값을 담음
+    	weatherFcstInfo.add(weatherFcst.get(3)); // 3시간 후의 기온 값을 담음
+    	weatherFcstInfo.add(weatherFcst.get(6)); // 6시간 후의 기온 값을 담음
+    	weatherFcstInfo.add(weatherFcst.get(9)); // 9시간 후의 기온 값을 담음
         
         model.addAttribute("weatherFcstInfo", weatherFcstInfo);
-        System.out.println("weatherFcstInfo: " + weatherFcstInfo);
         
-        return "weatherCurrentInfo";
+        return "weatherCurrentInfo"; // Model addAttribute 했기 때문에, 조회용 jsp로 return 하지 않고 가공용 jsp로 return
         
 	}
 }

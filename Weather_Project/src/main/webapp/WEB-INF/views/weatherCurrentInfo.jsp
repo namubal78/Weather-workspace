@@ -8,50 +8,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Insert title here</title>
-    <script src="https://kit.fontawesome.com/6cda7ccd12.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/6cda7ccd12.js" crossorigin="anonymous"></script> <!-- icon -->
 </head>
 <body>
 
     <div style="background-color: rgb(55, 102, 160); border-radius: 10px; height: 320px; padding: 10px;">
+        
         <div style="color: lightgray; margin: 10px; font-size: 20px;" >현재 시각 날씨</div>
+        
+        <!-- 현재 시각, 예보 시각-->
         <div style="color: lightgray; margin: 10px; font-size: 13px;">       
-            
             <c:set var="now" value="<%=new java.util.Date()%>" />
             <c:set var="sysTime"><fmt:formatDate value="${now}" pattern="hh:dd" /></c:set> 
             <c:out value="${sysTime}" />
-
             (예보 시각: ${weatherInfo.baseTime.substring(0, 2)}:00)
         </div>
 
+        <!-- 하늘 상태 icon, 기온, text -->
         <div style="display: block;">
-            <div style="display: inline; float: left; width: 25%; margin-top: 25px; color: rgb(41, 41, 41);" align="center">
-                
+            <div style="display: inline; float: left; width: 25%; margin-top: 25px; color: rgb(41, 41, 41);" align="center">               
                 <c:choose>
-                    <c:when test="${weatherInfo.SKY.intValue() == 1}">
+                    <c:when test="${weatherInfo.SKY.intValue() == 1}"> <!-- 맑음 -->
                     <i class="fa-regular fa-sun fa-5x"></i>
                     </c:when>                
-                    <c:when test="${weatherInfo.SKY.intValue() == 3}">
+                    <c:when test="${weatherInfo.SKY.intValue() == 3}"> <!-- 구름 -->
                         <i class="fa-solid fa-cloud-sun fa-5x"></i>                
                     </c:when>                
-                    <c:when test="${weatherInfo.SKY.intValue() == 4}">
+                    <c:when test="${weatherInfo.SKY.intValue() == 4}"> <!-- 흐림 -->
                         <i class="fa-solid fa-cloud fa-5x"></i>
                     </c:when>
-                    <c:when test="{weatherInfo.PTY.intValue() == 1}">
+                    <c:when test="{weatherInfo.PTY.intValue() == 1}"> <!-- 비 -->
                         <i class="fa-solid fa-cloud-rain fa-5x"></i>
                     </c:when>                 
-                    <c:when test="{weatherInfo.PTY.intValue() == 2}">
+                    <c:when test="{weatherInfo.PTY.intValue() == 2}"> <!-- 비/눈 -->
                         <i class="fa-solid fa-cloud-meatball fa-5x"></i>
                     </c:when>                 
-                    <c:when test="{weatherInfo.PTY.intValue() == 3}">
+                    <c:when test="{weatherInfo.PTY.intValue() == 3}"> <!-- 눈 -->
                         <i class="fa-regular fa-snowflake fa-5x"></i>
                     </c:when>                 
-                    <c:when test="{weatherInfo.PTY.intValue() == 4}">
+                    <c:when test="{weatherInfo.PTY.intValue() == 4}"> <!-- 소나기 -->
                         <i class="fa-solid fa-cloud-showers-heavy fa-5x"></i>
                     </c:when>
                 </c:choose>
-
             </div>
-            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 40px; color: lightgray;">${weatherInfo.TMP.intValue()}'C</p></div>
+            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 40px; color: lightgray;">${weatherInfo.TMP.intValue()}'C</p></div> <!-- 기온 -->
             <div style="display: inline; float: left; width: 25%;" align="left">
                 <c:choose>
                     <c:when test="${weatherInfo.SKY.intValue() == 1}">
@@ -77,9 +77,10 @@
                     </c:when>
                 </c:choose>
             </div>
-            <div style="display: inline; float: left; width: 25%;" align="left"><p style="font-size: 40px; color: rgb(55, 102, 160);">공백</p></div>
+            <div style="display: inline; float: left; width: 25%;" align="left"><p style="font-size: 40px; color: rgb(55, 102, 160);">공백</p></div> <!-- div 유지용 공백 -->
         </div>
 
+        <!-- 일 최고기온, 일 최저기온 -->
         <div style="color: lightgray; margin: 10px; font-size: 20px;">
             ${weatherInfo.fcstDate.substring(4, 6)}월             
             ${weatherInfo.fcstDate.substring(6, 8)}일 최고 기온은 
@@ -88,8 +89,8 @@
             <span style="color: blue; font-size: 20px;">${Integer.valueOf(weatherMaxMin.get(1))}'C</span> 입니다.
         </div>
 
-        <div style="display: block;">
-        
+        <!-- 그 외 기타 정보들 -->
+        <div style="display: block;">        
             <div style="display: inline; float: left; width: 25%;" align="center">
                 <p style="font-size: 15px; color: lightgray;">
                     &nbsp;<i class="fa-solid fa-umbrella" style="color: orange;"></i>&nbsp;&nbsp;강수확률: ${weatherInfo.POP.intValue()} %
@@ -109,18 +110,25 @@
                 <p style="font-size: 15px; color: lightgray;">
                     &nbsp;<i class="fa-solid fa-wind" style="color: lightskyblue"></i>&nbsp;&nbsp;풍속: ${weatherInfo.WSD.intValue()} m/s
                 </p>
-            </div>
-        
+            </div>        
         </div>
     </div>
+    
     <br>
+    
+    <!-- 단기 날씨 예보 -->
     <div style="background-color: rgb(55, 102, 160); border-radius: 10px; height: 180px; padding: 10px;">
         <div style="color: lightgray; margin-left: 10px; margin-top: 10px; font-size: 20px;">단기 날씨 예보</div>
+        
+        <!-- 시간별 기온(증감) -->
         <div>
+            <!-- 현재 -->
             <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
                 <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(0)}'C <span style="color: black; font-size: 35px;">(-)</span>
                 </p>
             </div>
+                      
+            <!-- 3시간 후 -->
             <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
                 <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(1)}'C
                     <c:choose>
@@ -136,6 +144,8 @@
                     </c:choose>
                 </p>
             </div>
+
+            <!-- 6시간 후 -->
             <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
                 <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(2)}'C
                     <c:choose>
@@ -151,6 +161,8 @@
                     </c:choose>
                 </p>
             </div>
+            
+            <!-- 9시간 후 -->
             <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
                 <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(3)}'C
                     <c:choose>
@@ -167,6 +179,8 @@
                 </p>
             </div>
         </div>
+        
+        <!-- 시간 구분 text -->
         <div>
             <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 15px; color: lightgray;">${weatherInfo.baseTime.substring(0, 2)}:00</p></div>
             <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 15px; color: lightgray;">${weatherInfo.baseTime.substring(0, 2)}:00 + 3H</p></div>
@@ -174,8 +188,6 @@
             <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 15px; color: lightgray;">${weatherInfo.baseTime.substring(0, 2)}:00 + 9H</p></div>
         </div>
     </div>
-
-
 
 </body>
 </html>
