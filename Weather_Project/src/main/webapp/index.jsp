@@ -20,8 +20,8 @@
 	}
 
 	#wrap {
-		width: 612px;
-		height: 612px;
+		width: 662px;
+		height: 692px;
 		background-color: rgb(77, 127, 187);
 		border-radius: 10px;
 		margin: 15px;
@@ -37,7 +37,7 @@
 	}
 
 	#title>p {
-		font-size: 40px;
+		font-size: 45px;
 		color: lightgray;
 		margin-left: 10px;
 	}
@@ -60,14 +60,15 @@
 	<div id="wrap">
 	
 		<div id="title">
-			<p style="margin: 10px;">오늘의 날씨 조회</p>
+			<p style="margin-left: 10px; margin-top: 30px;">오늘의 날씨</p>
 			<br>
 		</div>
 
 		<div id="content">
 			<div id="weatherCurrent">
 				<br><br><br><br><br><br>
-				<p style="font-size: 20px; color: lightgray;" align="center">loading now...</p>
+				<p style="font-size: 30px; font-weight: bold; color: rgb(43, 43, 43);" align="center">loading now...</p>
+				<p style="font-size: 20px; font-weight: bold; color: rgb(43, 43, 43);" align="center">(날씨가 조회되지 않을 경우, F5키를 눌러 새로고침 해주세요)</p>
 			</div>	
 		</div>		
     </div>

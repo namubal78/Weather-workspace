@@ -12,8 +12,8 @@
 </head>
 <body>
 
-    <div style="background-color: rgb(49, 90, 141); border-radius: 10px; height: 270px; padding: 10px;">
-        <div style="color: lightgray; margin: 10px; font-size: 20px;" >현재 날씨</div>
+    <div style="background-color: rgb(55, 102, 160); border-radius: 10px; height: 320px; padding: 10px;">
+        <div style="color: lightgray; margin: 10px; font-size: 20px;" >현재 시각 날씨</div>
         <div style="color: lightgray; margin: 10px; font-size: 13px;">       
             
             <c:set var="now" value="<%=new java.util.Date()%>" />
@@ -24,7 +24,7 @@
         </div>
 
         <div style="display: block;">
-            <div style="display: inline; float: left; width: 25%; margin-top: 25px;" align="center">
+            <div style="display: inline; float: left; width: 25%; margin-top: 25px; color: rgb(41, 41, 41);" align="center">
                 
                 <c:choose>
                     <c:when test="${weatherInfo.SKY.intValue() == 1}">
@@ -51,15 +51,14 @@
                 </c:choose>
 
             </div>
-            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 40px; color: lightgray;">${weatherInfo.TMP.intValue()} 'C</p></div>
+            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 40px; color: lightgray;">${weatherInfo.TMP.intValue()}'C</p></div>
             <div style="display: inline; float: left; width: 25%;" align="left">
-                
                 <c:choose>
                     <c:when test="${weatherInfo.SKY.intValue() == 1}">
                         <p style="font-size: 40px; color: lightgray;">맑음</p>
                     </c:when>                
                     <c:when test="${weatherInfo.SKY.intValue() == 3}">
-                        <p style="font-size: 40px; color: lightgray;">구름많음</p>
+                        <p style="font-size: 40px; color: lightgray;">구름</p>
                     </c:when>                
                     <c:when test="${weatherInfo.SKY.intValue() == 4}">
                         <p style="font-size: 40px; color: lightgray;">흐림</p>
@@ -77,44 +76,102 @@
                         <p style="font-size: 40px; color: lightgray;">소나기</p>
                     </c:when>
                 </c:choose>
-                
             </div>
-            
-            <div style="display: inline; float: left; width: 25%;" align="left"><p style="font-size: 40px; color: rgb(49, 90, 141);">공백</p></div>
+            <div style="display: inline; float: left; width: 25%;" align="left"><p style="font-size: 40px; color: rgb(55, 102, 160);">공백</p></div>
         </div>
+
+        <div style="color: lightgray; margin: 10px; font-size: 20px;">
+            ${weatherInfo.fcstDate.substring(4, 6)}월             
+            ${weatherInfo.fcstDate.substring(6, 8)}일 최고 기온은 
+            <span style="color: red; font-size: 20px;">${Integer.valueOf(weatherMaxMin.get(0))}'C</span> 이고,
+            최저 기온은
+            <span style="color: blue; font-size: 20px;">${Integer.valueOf(weatherMaxMin.get(1))}'C</span> 입니다.
+        </div>
+
         <div style="display: block;">
         
-            <div style="display: inline; float: left; width: 25%;" align="left">
+            <div style="display: inline; float: left; width: 25%;" align="center">
                 <p style="font-size: 15px; color: lightgray;">
-                    &nbsp;<i class="fa-solid fa-umbrella"></i>&nbsp;강수확률: ${weatherInfo.POP.intValue()} %
+                    &nbsp;<i class="fa-solid fa-umbrella" style="color: orange;"></i>&nbsp;&nbsp;강수확률: ${weatherInfo.POP.intValue()} %
                 </p>
             </div>
-            <div style="display: inline; float: left; width: 25%;" align="left">
+            <div style="display: inline; float: left; width: 25%;" align="center">
                 <p style="font-size: 15px; color: lightgray;">
-                    &nbsp;<i class="fa-solid fa-droplet"></i>&nbsp;습도: ${weatherInfo.REH.intValue()} %
+                    &nbsp;<i class="fa-solid fa-droplet" style="color:aquamarine"></i>&nbsp;&nbsp;습도: ${weatherInfo.REH.intValue()} %
                 </p>
             </div>
-            <div style="display: inline; float: left; width: 25%;" align="left">
+            <div style="display: inline; float: left; width: 25%;" align="center">
                 <p style="font-size: 15px; color: lightgray;">
-                    &nbsp;<i class="fa-solid fa-water"></i>&nbsp;파고: ${weatherInfo.WAV.intValue()} M
+                    &nbsp;<i class="fa-solid fa-water" style="color: darkcyan;"></i>&nbsp;&nbsp;파고: ${weatherInfo.WAV.intValue()} M
                 </p>
             </div>
-            <div style="display: inline; float: left; width: 25%;" align="left">
+            <div style="display: inline; float: left; width: 25%;" align="center">
                 <p style="font-size: 15px; color: lightgray;">
-                    &nbsp;<i class="fa-solid fa-wind"></i>&nbsp;풍속: ${weatherInfo.WSD.intValue()} m/s
+                    &nbsp;<i class="fa-solid fa-wind" style="color: lightskyblue"></i>&nbsp;&nbsp;풍속: ${weatherInfo.WSD.intValue()} m/s
                 </p>
             </div>
         
         </div>
     </div>
     <br>
-    <div style="background-color: rgb(49, 90, 141); border-radius: 10px; height: 170px; padding: 10px;">
-        <div style="color: lightgray; margin: 10px; font-size: 20px;">날씨 예보</div>
+    <div style="background-color: rgb(55, 102, 160); border-radius: 10px; height: 180px; padding: 10px;">
+        <div style="color: lightgray; margin-left: 10px; margin-top: 10px; font-size: 20px;">단기 날씨 예보</div>
         <div>
-            <div style="display: inline; float: left; width: 25%; border: 1px solid black;" align="left">1</div>
-            <div style="display: inline; float: left; width: 25%;" align="left">2</div>
-            <div style="display: inline; float: left; width: 25%;" align="left">3</div>
-            <div style="display: inline; float: left; width: 25%;" align="left">4</div>
+            <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
+                <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(0)}'C <span style="color: black; font-size: 35px;">(-)</span>
+                </p>
+            </div>
+            <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
+                <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(1)}'C
+                    <c:choose>
+                        <c:when test="${weatherFcstInfo.get(1) - weatherFcstInfo.get(0) > 0 }">
+                            <span style="color: red; font-size: 35px;">(+${weatherFcstInfo.get(1) - weatherFcstInfo.get(0)})</span>
+                        </c:when>                    
+                        <c:when test="${weatherFcstInfo.get(1) - weatherFcstInfo.get(0) == 0 }">
+                            <span style="color: black; font-size: 35px;">(-)</span>
+                        </c:when>                    
+                        <c:when test="${weatherFcstInfo.get(1) - weatherFcstInfo.get(0) < 0 }">
+                            <span style="color: blue; font-size: 35px;">(${weatherFcstInfo.get(1) - weatherFcstInfo.get(0)})</span>
+                        </c:when>
+                    </c:choose>
+                </p>
+            </div>
+            <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
+                <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(2)}'C
+                    <c:choose>
+                        <c:when test="${weatherFcstInfo.get(2) - weatherFcstInfo.get(1) > 0 }">
+                            <span style="color: red; font-size: 35px;">(+${weatherFcstInfo.get(2) - weatherFcstInfo.get(1)})</span>
+                        </c:when>                    
+                        <c:when test="${weatherFcstInfo.get(2) - weatherFcstInfo.get(1) == 0 }">
+                            <span style="color: black; font-size: 35px;">(-)</span>
+                        </c:when>                    
+                        <c:when test="${weatherFcstInfo.get(2) - weatherFcstInfo.get(1) < 0 }">
+                            <span style="color: blue; font-size: 35px;">(${weatherFcstInfo.get(2) - weatherFcstInfo.get(1)})</span>
+                        </c:when>
+                    </c:choose>
+                </p>
+            </div>
+            <div style="display: inline; float: left; width: 25%; height: 80px;" align="center">
+                <p style="font-size: 35px; color: lightgray;">${weatherFcstInfo.get(3)}'C
+                    <c:choose>
+                        <c:when test="${weatherFcstInfo.get(3) - weatherFcstInfo.get(2) > 0 }">
+                            <span style="color: red; font-size: 35px;">(+${weatherFcstInfo.get(3) - weatherFcstInfo.get(2)})</span>
+                        </c:when>                    
+                        <c:when test="${weatherFcstInfo.get(3) - weatherFcstInfo.get(2) == 0 }">
+                            <span style="color: black; font-size: 35px;">(-)</span>
+                        </c:when>                    
+                        <c:when test="${weatherFcstInfo.get(3) - weatherFcstInfo.get(2) < 0 }">
+                            <span style="color: blue; font-size: 35px;">(${weatherFcstInfo.get(3) - weatherFcstInfo.get(2)})</span>
+                        </c:when>
+                    </c:choose>
+                </p>
+            </div>
+        </div>
+        <div>
+            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 15px; color: lightgray;">${weatherInfo.baseTime.substring(0, 2)}:00</p></div>
+            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 15px; color: lightgray;">${weatherInfo.baseTime.substring(0, 2)}:00 + 3H</p></div>
+            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 15px; color: lightgray;">${weatherInfo.baseTime.substring(0, 2)}:00 + 6H</p></div>
+            <div style="display: inline; float: left; width: 25%;" align="center"><p style="font-size: 15px; color: lightgray;">${weatherInfo.baseTime.substring(0, 2)}:00 + 9H</p></div>
         </div>
     </div>
 
